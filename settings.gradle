@@ -1,0 +1,8 @@
+rootProject.name = 'mystore2-base-api'
+
+include 'product-management-api'
+include 'warehouse-api'
+include 'mystore2-data'
+include 'common-api'
+include 'sale-order'
+include 'sales'

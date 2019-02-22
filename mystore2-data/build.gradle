@@ -1,0 +1,88 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.8.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+plugins {
+    id 'nu.studer.jooq' version '2.0.7'
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'nu.studer.jooq'
+
+
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+	compile project(':common-api')
+	
+	compile('org.springframework.boot:spring-boot-starter-jooq')
+	compile('org.springframework.boot:spring-boot-starter-jdbc')
+	runtime('org.postgresql:postgresql')
+	jooqRuntime 'postgresql:postgresql:9.1-901.jdbc4'
+}
+
+jooq {
+   version = '3.9.5'
+   edition = 'OSS'
+   sample(sourceSets.main) {
+       jdbc {
+           driver = driverClassName
+           url = dbUrl
+           user = dbUsername
+           password = dbPassword
+       }
+       generator {
+           name = 'org.jooq.util.DefaultGenerator'
+           strategy {
+               name = 'org.jooq.util.DefaultGeneratorStrategy'
+               // ...
+           }
+           database {
+               name = 'org.jooq.util.postgres.PostgresDatabase'
+               inputSchema = 'public'
+               forcedTypes {
+                 forcedType {
+                     name = 'varchar'
+                     expression = '.*'
+                     types = 'JSONB?'
+                 }
+                 forcedType {
+                     name = 'varchar'
+                     expression = '.*'
+                     types = 'INET'
+                 }
+               }
+               // ...
+           }
+           
+           generate {
+               relations = true
+               deprecated = false
+               records = true
+               immutablePojos = true
+               fluentSetters = true
+               // ...
+           }
+           target {
+               packageName = 'com.mystore2.data'
+               directory = 'src/gen'
+           }
+       }
+   }
+}
